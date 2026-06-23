@@ -39,7 +39,7 @@ export default function Home() {
       if (!res.ok) throw new Error("天気データの取得に失敗しました");
       const data: { current: CurrentWeather; forecast: ForecastResponse } = await res.json();
       const days = groupForecastByDay(data.forecast);
-      const cityName = candidate.local_names?.ja ?? data.current.name ?? candidate.name;
+      const cityName = candidate.local_names?.ja ?? candidate.name;
       setWeather({ cityName, current: data.current, days });
       setSelectedDate(days[0]?.date ?? "");
     } catch (e) {
