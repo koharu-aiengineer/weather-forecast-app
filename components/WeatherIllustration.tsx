@@ -24,7 +24,7 @@ export default function WeatherIllustration() {
           src="/illustrations/weather-main.png"
           alt="天気イラスト"
           fill
-          style={{ objectFit: "cover", objectPosition: "center" }}
+          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(1.08)" }}
           onError={() => setError(true)}
           priority
         />
