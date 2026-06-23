@@ -104,7 +104,7 @@ export default function Home() {
         <div className="flex-1 flex items-center justify-center">
           <p className="text-[#c8d9b0] animate-pulse">読み込み中…</p>
         </div>
-      ) : weather ? (
+      ) : weather && candidates.length === 0 ? (
         <div className="w-full max-w-2xl flex flex-col sm:flex-row gap-8 items-start mt-4">
           <div className="flex justify-center w-full sm:w-auto">
             <WeatherIllustration />
