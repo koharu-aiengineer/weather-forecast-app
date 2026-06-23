@@ -59,7 +59,15 @@ export default function Home() {
     try {
       const res = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error("都市の検索に失敗しました");
-      const data: CityCandidate[] = await res.json();
+      const raw: CityCandidate[] = await res.json();
+      // 同じ表示名・都道府県・国の組み合わせで重複除去
+      const seen = new Set<string>();
+      const data = raw.filter((c) => {
+        const key = `${c.local_names?.ja ?? c.name}|${c.state ?? ""}|${c.country}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
       if (data.length === 0) {
         setError("該当する都市が見つかりませんでした");
         setCandidates([]);
