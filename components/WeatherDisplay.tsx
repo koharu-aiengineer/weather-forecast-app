@@ -2,6 +2,7 @@
 
 import type { CurrentWeather, DayForecast } from "@/types/weather";
 import DateTabs from "./DateTabs";
+import LaundryIndex from "./LaundryIndex";
 
 type Props = {
   cityName: string;
@@ -29,6 +30,14 @@ export default function WeatherDisplay({ cityName, current, days, selectedDate, 
     ? Math.round((selectedDay?.maxPop ?? 0))
     : selectedDay.maxPop;
 
+  const laundryPop = displayPop;
+  const laundryHumidity = isToday
+    ? current.main.humidity
+    : Math.round(selectedDay.items.reduce((s, i) => s + i.main.humidity, 0) / selectedDay.items.length);
+  const laundryWindSpeed = isToday
+    ? current.wind.speed
+    : selectedDay.items.reduce((s, i) => s + i.wind.speed, 0) / selectedDay.items.length;
+
   return (
     <div className="w-full space-y-6">
       {/* 都市名 */}
@@ -55,6 +64,9 @@ export default function WeatherDisplay({ cityName, current, days, selectedDate, 
           </p>
         )}
       </div>
+
+      {/* 洗濯指数 */}
+      <LaundryIndex pop={laundryPop} humidity={laundryHumidity} windSpeed={laundryWindSpeed} />
 
       {/* 詳細情報グリッド */}
       <div className="grid grid-cols-2 gap-3">

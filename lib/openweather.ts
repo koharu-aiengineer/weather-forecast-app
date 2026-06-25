@@ -9,10 +9,23 @@ function apiKey(): string {
 }
 
 export async function geocode(query: string): Promise<CityCandidate[]> {
-  const url = `${BASE}/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey()}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Geocoding API error: ${res.status}`);
-  return res.json();
+  const fetchGeo = async (q: string): Promise<CityCandidate[]> => {
+    const url = `${BASE}/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=5&appid=${apiKey()}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Geocoding API error: ${res.status}`);
+    return res.json();
+  };
+
+  const results = await fetchGeo(query);
+  if (results.length > 0) return results;
+
+  // 0件かつ「市」で終わっていない場合、「市」を付けて再検索
+  if (!query.endsWith("市")) {
+    const fallback = await fetchGeo(`${query}市`);
+    if (fallback.length > 0) return fallback;
+  }
+
+  return [];
 }
 
 export async function fetchCurrentWeather(lat: number, lon: number): Promise<CurrentWeather> {

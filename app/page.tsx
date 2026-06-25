@@ -5,8 +5,11 @@ import CitySearch from "@/components/CitySearch";
 import CityCandidateList from "@/components/CityCandidateList";
 import WeatherDisplay from "@/components/WeatherDisplay";
 import WeatherIllustration from "@/components/WeatherIllustration";
+import ScheduleSection from "@/components/ScheduleSection";
+import ChildGuideSection from "@/components/ChildGuideSection";
 import { groupForecastByDay } from "@/lib/groupForecastByDay";
 import type { CityCandidate, CurrentWeather, DayForecast, ForecastResponse } from "@/types/weather";
+import type { ScheduleWeatherEntry } from "@/types/schedule";
 
 type WeatherState = {
   cityName: string;
@@ -29,6 +32,7 @@ export default function Home() {
   const [weather, setWeather] = useState<WeatherState | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [scheduleWeatherEntries, setScheduleWeatherEntries] = useState<ScheduleWeatherEntry[]>([]);
 
   const loadWeather = useCallback(async (candidate: CityCandidate) => {
     setWeatherLoading(true);
@@ -105,7 +109,7 @@ export default function Home() {
           <p className="text-[#c8d9b0] animate-pulse">読み込み中…</p>
         </div>
       ) : weather && candidates.length === 0 ? (
-        <div className="w-full max-w-2xl flex flex-col sm:flex-row gap-8 items-start mt-4">
+        <div className="w-full max-w-4xl flex flex-col sm:flex-row gap-8 items-start mt-4">
           <div className="flex justify-center w-full sm:w-auto">
             <WeatherIllustration />
           </div>
@@ -120,6 +124,21 @@ export default function Home() {
           </div>
         </div>
       ) : null}
+
+      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+        <ScheduleSection onWeatherReady={setScheduleWeatherEntries} />
+
+        {weather && (
+          <ChildGuideSection
+            displayTemp={
+              selectedDate === weather.days[0]?.date
+                ? Math.round(weather.current.main.temp)
+                : (weather.days.find((d) => d.date === selectedDate) ?? weather.days[0])?.tempMax ?? 0
+            }
+            scheduleWeatherEntries={scheduleWeatherEntries}
+          />
+        )}
+      </div>
     </main>
   );
 }
